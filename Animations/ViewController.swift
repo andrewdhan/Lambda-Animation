@@ -59,11 +59,11 @@ class ViewController: UIViewController {
                 if let lambdaLabel = lambdaLabel as? UILabel{
                     var frame = lambdaLabel.frame
                     frame.origin = origin
-                    lambdaLabel.frame = frame
                     
                     lambdaLabel.backgroundColor = UIColor.white
                     lambdaLabel.textColor = UIColor.black
                     lambdaLabel.transform = CGAffineTransform(rotationAngle: 0.0)
+                    lambdaLabel.frame = frame
                     
                 }
             }

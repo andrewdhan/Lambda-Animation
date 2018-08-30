@@ -125,13 +125,7 @@ class ViewController: UIViewController {
                 
             }
             let lambdaLabel = lambdaLabelsOnly[index]
-            let verticalConstraints = NSLayoutConstraint(item: lambdaLabel,
-                                                         attribute: .centerY,
-                                                         relatedBy: .equal,
-                                                         toItem: view,
-                                                         attribute: .centerY,
-                                                         multiplier: 1.0,
-                                                         constant: 0)
+            //set horizontal constraints depending on which letter it is
             let horizontalConstraints: NSLayoutConstraint
             if index == 0{
                 horizontalConstraints = NSLayoutConstraint(item: lambdaLabel,
@@ -150,7 +144,33 @@ class ViewController: UIViewController {
                                                            multiplier: 1.0,
                                                            constant: 2.0)
             }
-            NSLayoutConstraint.activate([verticalConstraints, horizontalConstraints])
+            //set vertical constraints for all
+            let verticalConstraints = NSLayoutConstraint(item: lambdaLabel,
+                                                         attribute: .centerY,
+                                                         relatedBy: .equal,
+                                                         toItem: view,
+                                                         attribute: .centerY,
+                                                         multiplier: 1.0,
+                                                         constant: 0)
+            //set wideth and height constraint for all
+            let widthConstraint = NSLayoutConstraint(item: lambdaLabel,
+                                                     attribute: .width,
+                                                     relatedBy: .equal,
+                                                     toItem: nil,
+                                                     attribute: .notAnAttribute,
+                                                     multiplier: 1.0,
+                                                     constant: 20)
+            let heightConstraint = NSLayoutConstraint(item: lambdaLabel,
+                                                     attribute: .height,
+                                                     relatedBy: .equal,
+                                                     toItem: nil,
+                                                     attribute: .notAnAttribute,
+                                                     multiplier: 1.0,
+                                                     constant: 50)
+            NSLayoutConstraint.activate([verticalConstraints,
+                                         horizontalConstraints,
+                                         widthConstraint,
+                                         heightConstraint])
         }
     }
     

@@ -8,6 +8,14 @@
 
 import UIKit
 
+extension UIColor {
+    static func random() -> UIColor{
+        return UIColor(displayP3Red: CGFloat(drand48())/1,
+                       green: CGFloat(drand48())/1,
+                       blue: CGFloat(drand48())/1,
+                       alpha: CGFloat(drand48())/1)
+    }
+}
 class ViewController: UIViewController {
     
     override func viewDidLoad() {
@@ -17,66 +25,88 @@ class ViewController: UIViewController {
     
     @IBAction func toggle(_ sender: Any) {
         isScrambled = !isScrambled
-        animate()
+//        animate()
+        scatter()
         
     }
     
+    func scatter() {
+        UIView.animate(withDuration: 2) {
+            for (lambdaLabel, _) in self.lambdaLabels {
+                if let lambdaLabel = lambdaLabel as? UIImageView{
+                    lambdaLabel.alpha = 0.0
+                }
+                
+                if let lambdaLabel = lambdaLabel as? UILabel{
+                    var frame = lambdaLabel.frame
+                    let origin = frame.origin
+                    frame.origin.x = self.view.frame.width * CGFloat(drand48())
+                    frame.origin.y = 100 + (self.view.frame.height - 100) * CGFloat(drand48())
+    
+                    lambdaLabel.frame = frame
+                    lambdaLabel.backgroundColor = UIColor.random()
+                    lambdaLabel.textColor = UIColor.random()
+                    lambdaLabel.transform = CGAffineTransform(rotationAngle: CGFloat(drand48()*360.0))
+                }
+            }
+        }
+    }
+    
+    func gather() {
+        
+    }
     func animate(){
-        for lambdaLabel in lambdaLabels {
-            let animation: CAKeyframeAnimation
+        for (lambdaLabel, _) in lambdaLabels {
+            //
+
             if let lambdaLabel = lambdaLabel as? UIImageView {
-                animation = CAKeyframeAnimation(keyPath: "opacity")
-                animation.values = [1.0, 0.0, 0.0, 1.0]
-                animation.duration = 3
+                let fadeAnimation = CAKeyframeAnimation(keyPath: "opacity")
+                fadeAnimation.values = [1.0, 0.0, 0.0, 1.0]
+                fadeAnimation.duration = 3
+                lambdaLabel.layer.add(fadeAnimation, forKey: "fade")
+                
             } else {
-                animation = CAKeyframeAnimation(keyPath: "position")
+                //Position
+                let positionAnimation = CAKeyframeAnimation(keyPath: "position")
                 let origin = lambdaLabel.frame.origin
                 
                 let x = view.frame.width * CGFloat(drand48())
-                let y = view.frame.height * CGFloat(drand48())
-                let endPoint = CGPoint(x: x, y: y)
+                let y = (view.frame.height - 100) * CGFloat(drand48())
+                let endPoint = CGPoint(x: x, y: 100 + y)
                 
-                animation.values = [origin, endPoint, endPoint, origin]
-                animation.duration = 3
+                positionAnimation.values = [origin, endPoint, endPoint, origin]
+                positionAnimation.duration = 3
+                // background
+                let textColorAnimation = CAKeyframeAnimation(keyPath: "contents")
+                
+
+//                textColorAnimation.values
+                lambdaLabel.layer.add(positionAnimation, forKey: "scatter")
             }
-            lambdaLabel.layer.add(animation, forKey: "Scatter!")
         }
     }
     
     func setup(){
         let characters = ["L", "A", "M", "B", "D", "A"]
-        
+        var scratchLabels = [UIView]()
         for index in 0...6 {
+            
+        
             if index < 6 {
-                let newLabel = UILabel()
-                newLabel.translatesAutoresizingMaskIntoConstraints = false
-                newLabel.text = characters[index]
-                view.addSubview(newLabel)
-                lambdaLabels.append(newLabel)
+                let label = UILabel()
+                label.translatesAutoresizingMaskIntoConstraints = false
+                label.text = characters[index]
+                view.addSubview(label)
+                scratchLabels.append(label)
             } else {
-                let newImageView = UIImageView()
-                newImageView.translatesAutoresizingMaskIntoConstraints = false
-                newImageView.image = UIImage(named: "LambdaLogo")
-                view.addSubview(newImageView)
-                lambdaLabels.append(newImageView)
-                
-                let topConstraint = NSLayoutConstraint(item: newImageView,
-                                                       attribute: .top,
-                                                       relatedBy: .equal,
-                                                       toItem: lambdaLabels[5],
-                                                       attribute: .top,
-                                                       multiplier: 1.0, constant: 0.0)
-                let bottomConstraint = NSLayoutConstraint(item: newImageView,
-                                                          attribute: .bottom,
-                                                          relatedBy: .equal,
-                                                          toItem: lambdaLabels[5],
-                                                          attribute: .bottom,
-                                                          multiplier: 1.0, constant: 0.0)
-                
-                NSLayoutConstraint.activate([topConstraint,bottomConstraint])
+                let imageView = UIImageView()
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                imageView.image = UIImage(named: "LambdaLogo")
+                view.addSubview(imageView)
+                scratchLabels.append(imageView)
                 
             }
-            let lambdaLabel = lambdaLabels[index]
+            let lambdaLabel = scratchLabels[index]
             let verticalConstraints = NSLayoutConstraint(item: lambdaLabel,
                                                          attribute: .centerY,
                                                          relatedBy: .equal,
@@ -97,19 +127,19 @@ class ViewController: UIViewController {
                 horizontalConstraints = NSLayoutConstraint(item: lambdaLabel,
                                                            attribute: .left,
                                                            relatedBy: .equal,
-                                                           toItem: lambdaLabels[index - 1],
+                                                           toItem: scratchLabels[index - 1],
                                                            attribute: .right,
                                                            multiplier: 1.0,
                                                            constant: 2.0)
             }
-            
-            NSLayoutConstraint.activate([verticalConstraints, horizontalConstraints] )
+            lambdaLabels.append((lambdaLabel, lambdaLabel.frame.origin))
+            NSLayoutConstraint.activate([verticalConstraints, horizontalConstraints])
         }
         
     }
     
     
     var isScrambled = false
-    var lambdaLabels = [UIView]()
+    var lambdaLabels = [(UIView, CGPoint)]()
 }
 
